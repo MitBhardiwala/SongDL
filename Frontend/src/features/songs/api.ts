@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 import type { Song } from "./types";
+import { API_BASE_URL } from "@/lib/utils";
 
-const API_BASE_URL = "http://localhost:3000";
 
 export const fetchSongs = async (): Promise<Song[]> => {
   try {

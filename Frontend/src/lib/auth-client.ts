@@ -1,11 +1,11 @@
 // src/lib/auth-client.ts
 import { createAuthClient } from 'better-auth/react';
+import { API_BASE_URL } from './utils';
 
-console.log('VITE_API_URL:', JSON.stringify(import.meta.env.VITE_API_URL));
 
 
 export const authClient = createAuthClient({
-    baseURL: import.meta.env.VITE_API_URL, // your backend origin
+    baseURL: API_BASE_URL, // your backend origin
 });
 
 // Optional convenience exports
