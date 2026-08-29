@@ -19,7 +19,7 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
-  trustedOrigins: ['http://localhost:5173'],
+  trustedOrigins: ['http://localhost:5173', 'https://songdl-frontend.onrender.com'],
   secret: process.env.BETTER_AUTH_SECRET!,
   advanced: {
     defaultCookieAttributes: {
