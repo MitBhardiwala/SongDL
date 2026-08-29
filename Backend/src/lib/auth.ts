@@ -1,12 +1,13 @@
-// src/lib/auth.ts
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { prisma } from './prisma.js'; // note the .js extension — required with NodeNext/ESM
+import { prisma } from './prisma.js';
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
-    provider: 'postgresql', // or "mysql" / "sqlite"
+    provider: 'postgresql',
   }),
   emailAndPassword: {
     enabled: true,
@@ -22,8 +23,8 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET!,
   advanced: {
     defaultCookieAttributes: {
-      sameSite: 'lax',
-      secure: false, // must be false on plain http://localhost
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
     },
   },
 });

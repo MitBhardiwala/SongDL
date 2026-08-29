@@ -12,7 +12,7 @@ export function useAuth() {
     setIsPending(true)
     authClient.signIn.social({
       provider: "google",
-      callbackURL: `${import.meta.env.VITE_APP_URL ?? "http://localhost:5173"}/songs`,
+      callbackURL: `${import.meta.env.VITE_API_URL_FRONTEND}/songs`,
     })
   }
 
