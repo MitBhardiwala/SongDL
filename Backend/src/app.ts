@@ -1,5 +1,5 @@
 // server.ts
-import express from "express";
+import express, { Request, Response } from "express";
 import { errorHandler } from "./middlewares/error.middleware.js";
 import apiRoutes from "./routes/index.js";
 import cors from 'cors';
@@ -21,6 +21,12 @@ app.all("/api/auth/{*any}", toNodeHandler(auth));
 
 // json middleware AFTER the auth handler, for everything else
 app.use(express.json());
+
+app.get("/", (req: Request, res: Response) => {
+    return res.status(200).json({
+        message: "Server is running properly"
+    })
+})
 
 app.use("/api", apiRoutes);
 
