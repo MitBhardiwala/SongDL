@@ -13,23 +13,17 @@ export function useCollection() {
       const response = await api.post("/collection", { songId });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.success) {
         toast.success(data.message || "Song added to collection", {
           description: "You can find it in My Collection",
           duration: 4000,
         });
-        queryClient.invalidateQueries({ queryKey: queryKeys.collection });
-      } else {
-        toast.error(data.message || "Failed to add song", {
-          description: "Please try again",
-          duration: 4000,
-        });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.collection });
       }
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "An error occurred", {
-        description: "Something went wrong. Please try again",
         duration: 4000,
       });
     },
@@ -63,16 +57,15 @@ export function useRemoveFromCollection() {
       const response = await api.delete(`/collection/${songId}`);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success(data.message || "Song removed from collection", {
         description: "The song has been removed from My Collection",
         duration: 4000,
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.collection });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.collection });
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "An error occurred", {
-        description: "Something went wrong. Please try again",
         duration: 4000,
       });
     },
