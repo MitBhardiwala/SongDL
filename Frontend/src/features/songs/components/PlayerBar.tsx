@@ -125,94 +125,117 @@ export function PlayerBar({
           song ? "translate-y-0" : "translate-y-full"
         }`}
       >
-        <div className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
-          {/* Song info */}
-          <div className="flex min-w-0 flex-1 items-center gap-3">
-            {song && (
-              <>
-                <img
-                  src={song.thumbnailUrl}
-                  alt={song.title}
-                  className="h-10 w-10 flex-shrink-0 rounded-md object-cover"
-                  onError={(e) => {
-                    ;(e.currentTarget as HTMLImageElement).src =
-                      "https://placehold.co/40x40/1a1a1a/555?text=♪"
-                  }}
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center sm:gap-6 sm:px-4 sm:py-3">
+          {/* Top row on mobile: song info + play controls */}
+          <div className="flex items-center gap-3 sm:contents">
+            {/* Song info */}
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {song && (
+                <>
+                  <img
+                    src={song.thumbnailUrl}
+                    alt={song.title}
+                    className="h-10 w-10 flex-shrink-0 rounded-md object-cover"
+                    onError={(e) => {
+                      ;(e.currentTarget as HTMLImageElement).src =
+                        "https://placehold.co/40x40/1a1a1a/555?text=♪"
+                    }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{song.title}</p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {song.artist}
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Controls + progress */}
+            <div className="flex flex-shrink-0 items-center gap-3 sm:flex-1 sm:flex-col sm:gap-1.5">
+              {/* Buttons */}
+              <div className="flex items-center gap-1 sm:gap-3">
+                <Button
+                  id="player-prev-btn"
+                  onClick={skipPrev}
+                  aria-label="Previous song"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                >
+                  <SkipBack className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  id="player-playpause-btn"
+                  onClick={() => onPlayPauseChange(!isPlaying)}
+                  aria-label={isPlaying ? "Pause" : "Play"}
+                  size="icon"
+                  className="h-8 w-8 rounded-full transition-transform hover:scale-105 active:scale-95"
+                >
+                  {isPlaying ? (
+                    <Pause className="h-4 w-4" />
+                  ) : (
+                    <Play className="h-4 w-4 translate-x-0.5" />
+                  )}
+                </Button>
+
+                <Button
+                  id="player-next-btn"
+                  onClick={skipNext}
+                  aria-label="Next song"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                >
+                  <SkipForward className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Progress bar - hidden on mobile in this row, shown below instead */}
+              <div className="hidden w-full max-w-sm items-center gap-2 sm:flex">
+                <span className="w-8 text-right text-xs text-muted-foreground tabular-nums">
+                  {formatDuration(currentTime)}
+                </span>
+                <Slider
+                  id="player-progress"
+                  min={0}
+                  max={duration || 1}
+                  step={0.1}
+                  value={[currentTime]}
+                  onValueChange={handleSeek}
+                  aria-label="Seek"
+                  className="flex-1 cursor-pointer"
                 />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{song.title}</p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {song.artist}
-                  </p>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Controls + progress */}
-          <div className="flex flex-1 flex-col items-center gap-1.5">
-            {/* Buttons */}
-            <div className="flex items-center gap-3">
-              <Button
-                id="player-prev-btn"
-                onClick={skipPrev}
-                aria-label="Previous song"
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              >
-                <SkipBack className="h-4 w-4" />
-              </Button>
-
-              <Button
-                id="player-playpause-btn"
-                onClick={() => onPlayPauseChange(!isPlaying)}
-                aria-label={isPlaying ? "Pause" : "Play"}
-                size="icon"
-                className="h-8 w-8 rounded-full transition-transform hover:scale-105 active:scale-95"
-              >
-                {isPlaying ? (
-                  <Pause className="h-4 w-4" />
-                ) : (
-                  <Play className="h-4 w-4 translate-x-0.5" />
-                )}
-              </Button>
-
-              <Button
-                id="player-next-btn"
-                onClick={skipNext}
-                aria-label="Next song"
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-              >
-                <SkipForward className="h-4 w-4" />
-              </Button>
-            </div>
-
-            {/* Progress bar */}
-            <div className="flex w-full max-w-sm items-center gap-2">
-              <span className="w-8 text-right text-xs text-muted-foreground tabular-nums">
-                {formatDuration(currentTime)}
-              </span>
-              <Slider
-                id="player-progress"
-                min={0}
-                max={duration || 1}
-                step={0.1}
-                value={[currentTime]}
-                onValueChange={handleSeek}
-                aria-label="Seek"
-                className="flex-1 cursor-pointer"
-              />
-              <span className="w-8 text-xs text-muted-foreground tabular-nums">
-                {formatDuration(duration || (song?.duration ?? 0))}
-              </span>
+                <span className="w-8 text-xs text-muted-foreground tabular-nums">
+                  {formatDuration(duration || (song?.duration ?? 0))}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Volume */}
-          <div className="flex flex-1 items-center justify-start gap-2">
+          {/* Progress bar row - mobile only, full width below song info/controls */}
+          <div className="flex w-full items-center gap-2 sm:hidden">
+            <span className="w-8 text-right text-xs text-muted-foreground tabular-nums">
+              {formatDuration(currentTime)}
+            </span>
+            <Slider
+              id="player-progress-mobile"
+              min={0}
+              max={duration || 1}
+              step={0.1}
+              value={[currentTime]}
+              onValueChange={handleSeek}
+              aria-label="Seek"
+              className="flex-1 cursor-pointer"
+            />
+            <span className="w-8 text-xs text-muted-foreground tabular-nums">
+              {formatDuration(duration || (song?.duration ?? 0))}
+            </span>
+          </div>
+
+          {/* Volume - hidden on mobile */}
+          <div className="hidden flex-1 items-center justify-start gap-2 sm:flex">
             <Button
               id="player-mute-btn"
               onClick={toggleMute}
