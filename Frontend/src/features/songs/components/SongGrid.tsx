@@ -9,6 +9,7 @@ interface SongGridProps {
   isPlaying: boolean;
   onSelect: (song: Song) => void;
   onRetry: () => void;
+  mode?: "add" | "remove";
 }
 
 function SkeletonCard() {
@@ -31,6 +32,7 @@ export function SongGrid({
   isPlaying,
   onSelect,
   onRetry,
+  mode,
 }: SongGridProps) {
   if (isLoading) {
     return (
@@ -74,6 +76,7 @@ export function SongGrid({
           isActive={activeSong?.id === song.id}
           isPlaying={activeSong?.id === song.id && isPlaying}
           onSelect={onSelect}
+          mode={mode}
         />
       ))}
     </div>

@@ -1,15 +1,38 @@
-import { Play, Pause } from "lucide-react";
-import type { Song } from "../types";
-import { formatDuration } from "../utils";
-
+import { Play, Pause, BookmarkPlus, BookmarkMinus, Loader2 } from "lucide-react"
+import type { Song } from "../types"
+import { formatDuration } from "../utils"
+import { useCollection, useRemoveFromCollection } from "../useCollection"
+import { useAuth } from "@/hooks/useAuth"
 interface SongCardProps {
-  song: Song;
-  isPlaying: boolean;
-  isActive: boolean;
-  onSelect: (song: Song) => void;
+  song: Song
+  isPlaying: boolean
+  isActive: boolean
+  onSelect: (song: Song) => void
+  mode?: "add" | "remove"
 }
 
-export function SongCard({ song, isPlaying, isActive, onSelect }: SongCardProps) {
+export function SongCard({
+  song,
+  isPlaying,
+  isActive,
+  onSelect,
+  mode = "add",
+}: SongCardProps) {
+  const { mutate: addSong, isPending: isAdding } = useCollection()
+  const { mutate: removeSong, isPending: isRemoving } = useRemoveFromCollection()
+  const { session } = useAuth()
+
+  const isPending = mode === "add" ? isAdding : isRemoving
+
+  const handleCollectionAction = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (mode === "add") {
+      addSong(song.id)
+    } else {
+      removeSong(song.id)
+    }
+  }
+
   return (
     <div
       id={`song-card-${song.id}`}
@@ -18,11 +41,7 @@ export function SongCard({ song, isPlaying, isActive, onSelect }: SongCardProps)
       aria-label={`Play ${song.title}`}
       onClick={() => onSelect(song)}
       onKeyDown={(e) => e.key === "Enter" && onSelect(song)}
-      className={`
-        group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card text-card-foreground
-        shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md
-        ${isActive ? "border-primary ring-1 ring-primary/50" : "border-border"}
-      `}
+      className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${isActive ? "border-primary ring-1 ring-primary/50" : "border-border"} `}
     >
       {/* Thumbnail */}
       <div className="relative aspect-video w-full overflow-hidden bg-muted">
@@ -32,13 +51,33 @@ export function SongCard({ song, isPlaying, isActive, onSelect }: SongCardProps)
           className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           onError={(e) => {
-            (e.currentTarget as HTMLImageElement).src =
-              "https://placehold.co/320x180/1a1a1a/555?text=No+Image";
+            ;(e.currentTarget as HTMLImageElement).src =
+              "https://placehold.co/320x180/1a1a1a/555?text=No+Image"
           }}
         />
 
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+
+        {/* Collection action button — only for logged-in users */}
+        {session && (
+          <button
+            onClick={handleCollectionAction}
+            disabled={isPending}
+            className={`absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 hover:bg-primary focus:opacity-100 ${
+              isPending ? "cursor-not-allowed opacity-100 sm:opacity-100" : ""
+            }`}
+            aria-label={mode === "add" ? "Add to collection" : "Remove from collection"}
+          >
+            {isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : mode === "add" ? (
+              <BookmarkPlus className="h-4 w-4" />
+            ) : (
+              <BookmarkMinus className="h-4 w-4" />
+            )}
+          </button>
+        )}
 
         {/* Play/Pause icon (center overlay) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
@@ -70,9 +109,11 @@ export function SongCard({ song, isPlaying, isActive, onSelect }: SongCardProps)
 
       {/* Info */}
       <div className="flex flex-col gap-0.5 p-3">
-        <p className="truncate text-sm font-semibold leading-snug">{song.title}</p>
+        <p className="truncate text-sm leading-snug font-semibold">
+          {song.title}
+        </p>
         <p className="truncate text-xs text-muted-foreground">{song.artist}</p>
       </div>
     </div>
-  );
+  )
 }

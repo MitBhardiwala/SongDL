@@ -5,9 +5,9 @@ import * as songsService from "../services/songs.service.js";
 /**
  * Controller to list all songs.
  */
-export const list = async (req: Request, res: Response) => {
+export const list = async (_req: Request, res: Response) => {
   const songs = await songsService.getAllSongs();
-  return res.json(songs);
+  return res.json({ success: true, message: "Songs listed successfully", data: songs });
 };
 
 /**
@@ -21,5 +21,5 @@ export const get = async (req: Request, res: Response) => {
   }
 
   const song = await songsService.getSongById(id);
-  return res.json(song);
+  return res.json({ success: true, message: "Song retrieved successfully", data: song });
 };

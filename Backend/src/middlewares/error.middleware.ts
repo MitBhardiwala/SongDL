@@ -3,9 +3,9 @@ import { ApiError } from "../utils/ApiError.js";
 
 export const errorHandler = (
     err: unknown,
-    req: Request,
+    _req: Request,
     res: Response,
-    next: NextFunction
+    _next: NextFunction
 ) => {
     console.error(err);
 

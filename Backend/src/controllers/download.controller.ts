@@ -16,6 +16,6 @@ export const downloadMp3 = async (req: Request, res: Response) => {
     }
 
     const result = await processDownload(url, videoId);
-    
+
     return res.json(result);
 };

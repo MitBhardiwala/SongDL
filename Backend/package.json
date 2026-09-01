@@ -22,7 +22,8 @@
     "express": "^5.2.1",
     "prisma": "^6.15.0",
     "tsx": "^4.23.12",
-    "uuid": "^14.0.2"
+    "uuid": "^14.0.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
