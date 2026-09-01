@@ -1,8 +1,16 @@
-import { Play, Pause, BookmarkPlus, BookmarkMinus, Loader2 } from "lucide-react"
+import { Play, Pause, BookmarkPlus, BookmarkMinus, Loader2, MoreVertical, Plus, Trash2 } from "lucide-react"
 import type { Song } from "../types"
 import { formatDuration } from "../utils"
 import { useCollection, useRemoveFromCollection } from "../useCollection"
 import { useAuth } from "@/hooks/useAuth"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+
 interface SongCardProps {
   song: Song
   isPlaying: boolean
@@ -59,24 +67,45 @@ export function SongCard({
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
-        {/* Collection action button — only for logged-in users */}
+        {/* Collection action button — Dropdown Menu */}
         {session && (
-          <button
-            onClick={handleCollectionAction}
-            disabled={isPending}
-            className={`absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 hover:scale-110 hover:bg-primary focus:opacity-100 ${
-              isPending ? "cursor-not-allowed opacity-100 sm:opacity-100" : ""
-            }`}
-            aria-label={mode === "add" ? "Add to collection" : "Remove from collection"}
+          <div 
+            className={`absolute top-2 right-2 z-10 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 ${isPending ? "opacity-100 sm:opacity-100" : ""}`}
+            onClick={(e) => e.stopPropagation()}
           >
-            {isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : mode === "add" ? (
-              <BookmarkPlus className="h-4 w-4" />
-            ) : (
-              <BookmarkMinus className="h-4 w-4" />
-            )}
-          </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                  aria-label="More options"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MoreVertical className="h-4 w-4" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={handleCollectionAction} disabled={isPending}>
+                  {mode === "add" ? (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" />
+                      <span>Add to Collection</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                      <span className="text-destructive">Remove from Collection</span>
+                    </>
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )}
 
         {/* Play/Pause icon (center overlay) */}
