@@ -11,7 +11,7 @@ export function AuthControls() {
     return <div className="h-9 w-24 animate-pulse rounded-xl bg-muted" />
   }
 
-  if (session) {
+  if (session?.user) {
     return (
       <div className="flex items-center gap-2.5">
         {/* Avatar */}
