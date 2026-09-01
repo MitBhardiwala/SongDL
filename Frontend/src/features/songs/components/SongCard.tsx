@@ -1,4 +1,4 @@
-import { Play, Pause, BookmarkPlus, BookmarkMinus, Loader2, MoreVertical, Plus, Trash2 } from "lucide-react"
+import { Play, Pause, Loader2, MoreVertical, Plus, Trash2 } from "lucide-react"
 import type { Song } from "../types"
 import { formatDuration } from "../utils"
 import { useCollection, useRemoveFromCollection } from "../useCollection"
@@ -27,7 +27,8 @@ export function SongCard({
   mode = "add",
 }: SongCardProps) {
   const { mutate: addSong, isPending: isAdding } = useCollection()
-  const { mutate: removeSong, isPending: isRemoving } = useRemoveFromCollection()
+  const { mutate: removeSong, isPending: isRemoving } =
+    useRemoveFromCollection()
   const { session } = useAuth()
 
   const isPending = mode === "add" ? isAdding : isRemoving
@@ -69,7 +70,7 @@ export function SongCard({
 
         {/* Collection action button — Dropdown Menu */}
         {session && (
-          <div 
+          <div
             className={`absolute top-2 right-2 z-10 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 ${isPending ? "opacity-100 sm:opacity-100" : ""}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -90,7 +91,10 @@ export function SongCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={handleCollectionAction} disabled={isPending}>
+                <DropdownMenuItem
+                  onClick={handleCollectionAction}
+                  disabled={isPending}
+                >
                   {mode === "add" ? (
                     <>
                       <Plus className="mr-2 h-4 w-4" />
@@ -99,7 +103,9 @@ export function SongCard({
                   ) : (
                     <>
                       <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                      <span className="text-destructive">Remove from Collection</span>
+                      <span className="text-destructive">
+                        Remove from Collection
+                      </span>
                     </>
                   )}
                 </DropdownMenuItem>
