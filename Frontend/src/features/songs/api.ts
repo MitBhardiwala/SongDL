@@ -1,11 +1,12 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import type { Song } from "./types";
-import { API_BASE_URL } from "@/lib/utils";
+import { api } from "@/lib/api";
+
 
 
 export const fetchSongs = async (): Promise<Song[]> => {
   try {
-    const { data } = await axios.get<Song[]>(`${API_BASE_URL}/api/songs`);
+    const { data } = await api.get<Song[]>("/songs");
     return data;
   } catch (error) {
     if (error instanceof AxiosError && error.response?.data?.message) {
