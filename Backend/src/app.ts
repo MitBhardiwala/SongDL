@@ -30,6 +30,11 @@ app.get("/", (req: Request, res: Response) => {
         message: "Server is running properly"
     })
 })
+app.get("/status", (req: Request, res: Response) => {
+    return res.status(200).json({
+        message: "Server health is OK"
+    })
+})
 
 app.use("/api", apiRoutes);
 
