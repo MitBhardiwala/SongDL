@@ -7,7 +7,7 @@ import { requireAuth } from "../middlewares/require-auth.js";
 const router = Router();
 
 router.use("/download", downloadRoutes);
-router.use("/songs", requireAuth, songsRoutes);
+router.use("/songs", songsRoutes);
 router.use("/collection", requireAuth, collectionRoutes);
 
 export default router;

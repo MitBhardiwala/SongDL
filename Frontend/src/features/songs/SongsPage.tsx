@@ -3,10 +3,13 @@ import { useSongs } from "./useSongs";
 import type { Song } from "./types";
 import { SongGrid } from "./components/SongGrid";
 import { PlayerBar } from "./components/PlayerBar";
-
+import { useAuth } from "@/hooks/useAuth";
+import { AuthControls } from "@/features/auth/AuthControls";
+import { BookMarked } from "lucide-react";
 
 export function SongsPage() {
   const { songs, isLoading, isError, refetch } = useSongs();
+  const { session } = useAuth();
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -41,6 +44,26 @@ export function SongsPage() {
             {isLoading ? "Loading…" : `${songs.length} song${songs.length !== 1 ? "s" : ""}`}
           </p>
         </div>
+
+        {/* Guest CTA banner */}
+        {!session && (
+          <div className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-primary/20 bg-primary/5 px-5 py-4 backdrop-blur-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                <BookMarked className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold leading-snug">
+                  Create your personal collection
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Sign in to save songs and build your own library.
+                </p>
+              </div>
+            </div>
+            <AuthControls />
+          </div>
+        )}
 
         <SongGrid
           songs={songs}

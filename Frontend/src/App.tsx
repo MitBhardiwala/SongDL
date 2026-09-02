@@ -21,10 +21,10 @@ function App() {
         >
           {/* Public */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/songs" element={<SongsPage />} />
 
           {/* Protected — requires an active session */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/songs" element={<SongsPage />} />
             <Route path="/collection" element={<CollectionPage />} />
           </Route>
         </Route>
