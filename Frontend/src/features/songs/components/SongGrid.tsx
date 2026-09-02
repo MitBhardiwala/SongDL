@@ -9,6 +9,9 @@ interface SongGridProps {
   isPlaying: boolean;
   onSelect: (song: Song) => void;
   onRetry: () => void;
+  onAdd?: (songId: string) => Promise<any>;
+  onRemove?: (songId: string) => Promise<any>;
+  searchQuery?: string;
   mode?: "add" | "remove";
 }
 
@@ -32,6 +35,9 @@ export function SongGrid({
   isPlaying,
   onSelect,
   onRetry,
+  onAdd,
+  onRemove,
+  searchQuery,
   mode,
 }: SongGridProps) {
   if (isLoading) {
@@ -61,8 +67,17 @@ export function SongGrid({
 
   if (songs.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 py-16 text-center">
-        <p className="text-muted-foreground">No songs found. Download some first!</p>
+      <div className="flex flex-col items-center gap-3 py-16 text-center">
+        {searchQuery ? (
+          <>
+            <p className="text-muted-foreground">
+              No results for <span className="font-medium text-foreground">"{searchQuery}"</span>
+            </p>
+            <p className="text-xs text-muted-foreground">Try a different search term</p>
+          </>
+        ) : (
+          <p className="text-muted-foreground">No songs found. Download some first!</p>
+        )}
       </div>
     );
   }
@@ -76,6 +91,8 @@ export function SongGrid({
           isActive={activeSong?.id === song.id}
           isPlaying={activeSong?.id === song.id && isPlaying}
           onSelect={onSelect}
+          onAdd={onAdd}
+          onRemove={onRemove}
           mode={mode}
         />
       ))}

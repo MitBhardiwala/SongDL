@@ -16,12 +16,14 @@ export const add = async (req: Request, res: Response) => {
 /**
  * GET /api/collection
  * Lists all songs in the authenticated user's collection.
+ * Accepts optional ?q= search query.
  * Response shape matches GET /api/songs — array of Song objects.
  */
 export const list = async (req: Request, res: Response) => {
   const userId = req.user!.id;
+  const { q } = req.validatedQuery as { q?: string };
 
-  const songs = await collectionService.getUserCollection(userId);
+  const songs = await collectionService.getUserCollection(userId, q);
   return res.json({ success: true, message: "Songs listed successfully", data: songs });
 };
 

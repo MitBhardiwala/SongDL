@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom"
 import { Layout } from "@/components/layout/Layout"
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute"
 import { SongsPage } from "@/features/songs/SongsPage"
-import { CollectionPage } from "@/features/songs/CollectionPage"
+import { CollectionPage } from "@/features/collection/CollectionPage"
 import HomePage from "./components/layout/HomePage"
 import { Toaster } from "@/components/ui/sonner"
 

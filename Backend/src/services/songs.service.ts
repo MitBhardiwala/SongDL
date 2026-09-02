@@ -3,9 +3,18 @@ import { ApiError } from "../utils/ApiError.js";
 
 /**
  * Retrieves all songs, ordered by creation date (newest first).
+ * Optionally filters by a search query matched against title and artist.
  */
-export const getAllSongs = async () => {
+export const getAllSongs = async (query?: string) => {
   return await prisma.song.findMany({
+    where: query
+      ? {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { artist: { contains: query, mode: "insensitive" } },
+          ],
+        }
+      : undefined,
     orderBy: {
       createdAt: "desc",
     },

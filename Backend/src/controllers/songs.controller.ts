@@ -5,8 +5,9 @@ import * as songsService from "../services/songs.service.js";
 /**
  * Controller to list all songs.
  */
-export const list = async (_req: Request, res: Response) => {
-  const songs = await songsService.getAllSongs();
+export const list = async (req: Request, res: Response) => {
+  const { q } = req.validatedQuery as { q?: string };
+  const songs = await songsService.getAllSongs(q);
   return res.json({ success: true, message: "Songs listed successfully", data: songs });
 };
 

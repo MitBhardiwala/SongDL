@@ -1,20 +1,14 @@
 import { useState, useCallback } from "react";
-import { useSongs } from "./useSongs";
-import { useCollection } from "@/features/collection/useCollection";
-import type { Song } from "./types";
-import { SongGrid } from "./components/SongGrid";
-import { PlayerBar } from "./components/PlayerBar";
-import { SearchBar } from "./components/SearchBar";
-import { useAuth } from "@/hooks/useAuth";
-import { AuthControls } from "@/features/auth/AuthControls";
-import { BookMarked } from "lucide-react";
+import { useCollection } from "./useCollection";
+import type { Song } from "../songs/types";
+import { SongGrid } from "../songs/components/SongGrid";
+import { PlayerBar } from "../songs/components/PlayerBar";
+import { SearchBar } from "../songs/components/SearchBar";
 
-export function SongsPage() {
+export function CollectionPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const { songs: allSongs } = useSongs(); // unfiltered — always kept for PlayerBar
-  const { songs, isLoading, isFetching, isError, refetch } = useSongs(searchQuery);
-  const { addSong } = useCollection();
-  const { session } = useAuth();
+  const { songs: allSongs, removeSong } = useCollection(); // unfiltered — for PlayerBar
+  const { songs, isLoading, isFetching, isError, refetch } = useCollection(searchQuery);
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -47,7 +41,7 @@ export function SongsPage() {
         {/* Header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Library</h1>
+            <h1 className="text-2xl font-bold tracking-tight">My Collection</h1>
             <p className="mt-1 text-sm text-muted-foreground transition-colors">
               {isLoading
                 ? "Loading…"
@@ -57,33 +51,13 @@ export function SongsPage() {
             </p>
           </div>
           <SearchBar
-            id="songs-search"
+            id="collection-search"
             value={searchQuery}
             onChange={setSearchQuery}
             isFetching={isFetching && isFiltering}
-            placeholder="Search songs…"
+            placeholder="Search collection…"
           />
         </div>
-
-        {/* Guest CTA banner */}
-        {!session && (
-          <div className="mb-6 flex items-center justify-between gap-4 rounded-xl border border-primary/20 bg-primary/5 px-5 py-4 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <BookMarked className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold leading-snug">
-                  Create your personal collection
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Sign in to save songs and build your own library.
-                </p>
-              </div>
-            </div>
-            <AuthControls />
-          </div>
-        )}
 
         <SongGrid
           songs={songs}
@@ -93,8 +67,9 @@ export function SongsPage() {
           isPlaying={isPlaying}
           onSelect={handleSelectSong}
           onRetry={refetch}
-          onAdd={addSong}
+          onRemove={removeSong}
           searchQuery={isFiltering ? searchQuery : undefined}
+          mode="remove"
         />
       </div>
 

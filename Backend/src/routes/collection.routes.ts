@@ -10,7 +10,7 @@ import {
   addToCollectionBodySchema,
   listCollectionQuerySchema,
   removeFromCollectionParamsSchema,
-} from "../validators/collection.validator.js";
+} from "../validators/validations.js";
 
 const router = Router();
 

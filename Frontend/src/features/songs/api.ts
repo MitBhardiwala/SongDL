@@ -2,11 +2,9 @@ import { AxiosError } from "axios";
 import type { Song } from "./types";
 import { api } from "@/lib/api";
 
-
-
-export const fetchSongs = async (): Promise<Song[]> => {
+export const fetchSongs = async (q?: string): Promise<Song[]> => {
   try {
-    const { data } = await api.get("/songs");
+    const { data } = await api.get("/songs", { params: q ? { q } : undefined });
     return data?.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response?.data?.message) {

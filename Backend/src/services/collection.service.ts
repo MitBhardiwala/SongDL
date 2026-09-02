@@ -50,11 +50,22 @@ export const removeSongFromCollection = async (
 
 /**
  * Returns all songs in a user's collection.
+ * Optionally filters by a search query matched against title and artist.
  * Response shape matches GET /api/songs — an array of Song objects.
  */
-export const getUserCollection = async (userId: string) => {
+export const getUserCollection = async (userId: string, query?: string) => {
   const userSongs = await prisma.userSong.findMany({
-    where: { userId },
+    where: {
+      userId,
+      ...(query && {
+        song: {
+          OR: [
+            { title: { contains: query, mode: "insensitive" } },
+            { artist: { contains: query, mode: "insensitive" } },
+          ],
+        },
+      }),
+    },
     include: { song: true },
     orderBy: { addedAt: "desc" },
   });

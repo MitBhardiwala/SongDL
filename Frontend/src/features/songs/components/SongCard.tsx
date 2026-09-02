@@ -2,7 +2,6 @@ import { Play, Pause, Loader2, MoreVertical, Plus, Trash2, Download } from "luci
 import { useState } from "react"
 import type { Song } from "../types"
 import { formatDuration } from "../utils"
-import { useCollection, useRemoveFromCollection } from "../useCollection"
 import { useAuth } from "@/hooks/useAuth"
 import {
   DropdownMenu,
@@ -17,6 +16,8 @@ interface SongCardProps {
   isPlaying: boolean
   isActive: boolean
   onSelect: (song: Song) => void
+  onAdd?: (songId: string) => Promise<any>
+  onRemove?: (songId: string) => Promise<any>
   mode?: "add" | "remove"
 }
 
@@ -25,22 +26,25 @@ export function SongCard({
   isPlaying,
   isActive,
   onSelect,
+  onAdd,
+  onRemove,
   mode = "add",
 }: SongCardProps) {
-  const { mutate: addSong, isPending: isAdding } = useCollection()
-  const { mutate: removeSong, isPending: isRemoving } =
-    useRemoveFromCollection()
+  const [isPending, setIsPending] = useState(false)
   const { session } = useAuth()
   const [isDownloading, setIsDownloading] = useState(false)
 
-  const isPending = mode === "add" ? isAdding : isRemoving
-
-  const handleCollectionAction = (e: React.MouseEvent) => {
+  const handleCollectionAction = async (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (mode === "add") {
-      addSong(song.id)
-    } else {
-      removeSong(song.id)
+    setIsPending(true)
+    try {
+      if (mode === "add") {
+        await onAdd?.(song.id)
+      } else {
+        await onRemove?.(song.id)
+      }
+    } finally {
+      setIsPending(false)
     }
   }
 
