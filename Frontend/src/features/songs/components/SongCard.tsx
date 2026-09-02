@@ -1,4 +1,5 @@
-import { Play, Pause, Loader2, MoreVertical, Plus, Trash2 } from "lucide-react"
+import { Play, Pause, Loader2, MoreVertical, Plus, Trash2, Download } from "lucide-react"
+import { useState } from "react"
 import type { Song } from "../types"
 import { formatDuration } from "../utils"
 import { useCollection, useRemoveFromCollection } from "../useCollection"
@@ -30,6 +31,7 @@ export function SongCard({
   const { mutate: removeSong, isPending: isRemoving } =
     useRemoveFromCollection()
   const { session } = useAuth()
+  const [isDownloading, setIsDownloading] = useState(false)
 
   const isPending = mode === "add" ? isAdding : isRemoving
 
@@ -40,6 +42,18 @@ export function SongCard({
     } else {
       removeSong(song.id)
     }
+  }
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsDownloading(true)
+    const a = document.createElement("a")
+    a.href = `${import.meta.env.VITE_API_URL}/api/download/song/${song.id}`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    // Give the browser a moment to initiate the download before resetting state
+    setTimeout(() => setIsDownloading(false), 1500)
   }
 
   return (
@@ -68,29 +82,43 @@ export function SongCard({
         {/* Overlay */}
         <div className="absolute inset-0 bg-black/30 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
 
-        {/* Collection action button — Dropdown Menu */}
-        {session && (
-          <div
-            className={`absolute top-2 right-2 z-10 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 ${isPending ? "opacity-100 sm:opacity-100" : ""}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
-                  aria-label="More options"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <MoreVertical className="h-4 w-4" />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+        {/* Options Dropdown — always visible */}
+        <div
+          className={`absolute top-2 right-2 z-10 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100 ${isPending || isDownloading ? "opacity-100 sm:opacity-100" : ""}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full bg-black/50 text-white hover:bg-black/70 hover:text-white"
+                aria-label="More options"
+                disabled={isPending || isDownloading}
+              >
+                {isPending || isDownloading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <MoreVertical className="h-4 w-4" />
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {/* Download — visible to everyone */}
+              <DropdownMenuItem
+                onClick={handleDownload}
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Download className="mr-2 h-4 w-4" />
+                )}
+                <span>{isDownloading ? "Downloading…" : "Download"}</span>
+              </DropdownMenuItem>
+
+              {/* Collection actions — logged-in users only */}
+              {session && (
                 <DropdownMenuItem
                   onClick={handleCollectionAction}
                   disabled={isPending}
@@ -109,10 +137,10 @@ export function SongCard({
                     </>
                   )}
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        )}
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
 
         {/* Play/Pause icon (center overlay) */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">

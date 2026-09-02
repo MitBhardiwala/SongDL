@@ -4,6 +4,17 @@ import { supabase } from "../lib/supabase.js";
 import { convertYoutubeToMp3, fetchVideoMetadata, isValidYoutubeUrl } from "../utils/youtube.util.js";
 import { ApiError } from "../utils/ApiError.js";
 
+export const streamSong = async (id: string) => {
+  const song = await prisma.song.findUnique({ where: { id } });
+  if (!song) throw new ApiError(404, "Song not found");
+
+  const response = await fetch(song.storageUrl);
+  if (!response.ok)
+    throw new ApiError(502, "Failed to fetch file from storage");
+
+  return { stream: response.body, title: song.title };
+};
+
 export const processDownload = async (url: string, videoId: string) => {
   const existing = await prisma.song.findUnique({ where: { videoId } });
 
