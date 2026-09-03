@@ -6,10 +6,20 @@ import { processDownload, streamSong } from "../services/download.service.js";
 
 
 export const downloadMp3 = async (req: Request, res: Response) => {
-    const { url } = req.query;
+    const { url, lyrics } = req.query;
 
     if (!url || typeof url !== "string") {
         throw new ApiError(400, "Query parameter 'url' is required");
+    }
+
+    let includeLyrics = false;
+    if (typeof lyrics === "string") {
+        const normalized = lyrics.trim().toLowerCase();
+        if (normalized === "true") {
+            includeLyrics = true;
+        } else if (normalized !== "false") {
+            throw new ApiError(400, "Query parameter 'lyrics' must be 'true' or 'false'");
+        }
     }
 
     const videoId = extractVideoId(url);
@@ -17,7 +27,7 @@ export const downloadMp3 = async (req: Request, res: Response) => {
         throw new ApiError(400, "Invalid YouTube URL");
     }
 
-    const result = await processDownload(url, videoId);
+    const result = await processDownload(url, videoId, { includeLyrics });
 
     return res.json(result);
 };

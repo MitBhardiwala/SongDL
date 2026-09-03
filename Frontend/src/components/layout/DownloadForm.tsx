@@ -19,11 +19,12 @@ import {
 
 export function DownloadForm() {
   const [url, setUrl] = useState("")
+  const [includeLyrics, setIncludeLyrics] = useState(false)
   const mutation = useDownloadMp3()
 
   const handleDownload = () => {
     if (!url.trim()) return
-    mutation.mutate(url)
+    mutation.mutate({ youtubeUrl: url, includeLyrics })
   }
 
   // Reset success state when the user types a new URL
@@ -41,7 +42,7 @@ export function DownloadForm() {
           YouTube to MP3
         </CardTitle>
         <CardDescription className="text-sm text-muted-foreground">
-          Paste a YouTube link and download the audio as an MP3.
+          Paste a YouTube link and download the audio as an MP3, with optional lyrics.
         </CardDescription>
       </CardHeader>
 
@@ -61,6 +62,17 @@ export function DownloadForm() {
             }}
           />
         </div>
+
+        <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <input
+            type="checkbox"
+            checked={includeLyrics}
+            onChange={(event) => setIncludeLyrics(event.target.checked)}
+            disabled={mutation.isPending}
+            className="h-4 w-4 accent-primary"
+          />
+          Fetch and embed lyrics when available
+        </label>
 
         {/* Download Button */}
         <Button
