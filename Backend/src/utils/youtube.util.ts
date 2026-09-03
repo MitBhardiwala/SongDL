@@ -35,6 +35,7 @@ export interface VideoMetadata {
 
 export const fetchVideoMetadata = async (youtubeUrl: string): Promise<VideoMetadata> => {
   const { stdout } = await run("yt-dlp", [
+    "--js-runtimes", "node",
     "--skip-download",
     "--print", "%(title)s",
     "--print", "%(uploader)s",
@@ -59,6 +60,7 @@ export const convertYoutubeToMp3 = async (youtubeUrl: string): Promise<string> =
   const expectedFile = path.join(DOWNLOAD_DIR, `${jobId}.mp3`);
 
   await run("yt-dlp", [
+    "--js-runtimes", "node",
     "-x", "--audio-format", "mp3", "--audio-quality", "0",
     "--embed-thumbnail",
     "--add-metadata",
